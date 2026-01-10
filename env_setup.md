@@ -60,12 +60,8 @@ JWT_SECRET=your-jwt-secret
 CLOUDINARY_CLOUD_NAME=your-cloud-name
 CLOUDINARY_API_KEY=your-api-key
 CLOUDINARY_API_SECRET=your-api-secret
+
+# frontend
+VITE_API_BASE_URL=your_backend_link 
 ```
 
-## Migration from Twilio
-
-If you're migrating from Twilio, remove these old environment variables:
-
-- ~~`TWILIO_ACCOUNT_SID`~~
-- ~~`TWILIO_AUTH_TOKEN`~~
-- ~~`TWILIO_PHONE_NUMBER`~~
