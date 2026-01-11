@@ -5,6 +5,8 @@ A full-stack real-time chat application that mirrors the core experience and int
 
 ---
 
+<img width="1919" height="905" alt="social" src="https://github.com/user-attachments/assets/982037d3-699f-4f75-bc6f-1c9be2e7f6b3" />
+
 ## Features
 
 - **Real-Time Messaging** – Instant messages with **delivered** and **read receipts**
@@ -22,7 +24,7 @@ A full-stack real-time chat application that mirrors the core experience and int
 
 ---
 
-<img width="1919" height="905" alt="social" src="https://github.com/user-attachments/assets/982037d3-699f-4f75-bc6f-1c9be2e7f6b3" />
+
 
 ## Tech Stack
 
