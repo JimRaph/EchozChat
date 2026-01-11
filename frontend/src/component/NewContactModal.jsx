@@ -1,42 +1,48 @@
-import { useState, useRef } from 'react';
-import { User, SearchIcon, ToggleLeft } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import axios from 'axios';
-import { base_url } from '../../utils/baseUrl';
-import { useAppContext } from '../context/context';
-import { useEffect } from 'react';
+import { useState, useRef } from "react";
+import { User, SearchIcon, ToggleLeft } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import axios from "axios";
+import { base_url } from "../../utils/baseUrl";
+import { useAppContext } from "../context/context";
+import { useEffect } from "react";
 
-const schema = yup.object().shape({
-  Phone: yup.string().required('Phone number is required'),
-  first_name: yup.string().required('First name is required'),
-  last_name: yup.string().required('Last name is required'),
-}).required();
+const schema = yup
+  .object()
+  .shape({
+    Phone: yup.string().required("Phone number is required"),
+    first_name: yup.string().required("First name is required"),
+    last_name: yup.string().required("Last name is required"),
+  })
+  .required();
 
 const countryCodes = [
-  { name: 'Nigeria', code: '+234', flag: '🇳🇬' },
-  { name: 'United States', code: '+1', flag: '🇺🇸' },
-  { name: 'United Kingdom', code: '+44', flag: '🇬🇧' },
-  { name: 'Canada', code: '+1', flag: '🇨🇦' },
-  { name: 'Germany', code: '+49', flag: '🇩🇪' },
-  { name: 'France', code: '+33', flag: '🇫🇷' },
-  { name: 'India', code: '+91', flag: '🇮🇳' },
-  { name: 'Australia', code: '+61', flag: '🇦🇺' },
-  { name: 'China', code: '+86', flag: '🇨🇳' },
+  { name: "Nigeria", code: "+234", flag: "🇳🇬" },
+  { name: "United States", code: "+1", flag: "🇺🇸" },
+  { name: "United Kingdom", code: "+44", flag: "🇬🇧" },
+  { name: "Canada", code: "+1", flag: "🇨🇦" },
+  { name: "Germany", code: "+49", flag: "🇩🇪" },
+  { name: "France", code: "+33", flag: "🇫🇷" },
+  { name: "India", code: "+91", flag: "🇮🇳" },
+  { name: "Australia", code: "+61", flag: "🇦🇺" },
+  { name: "China", code: "+86", flag: "🇨🇳" },
 ];
 
 const NewContactModal = ({ onClose }) => {
-
   const modalRef = useRef();
   const dropdownRef = useRef();
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [selectedCountry, setSelectedCountry] = useState(countryCodes[0]);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [error, setError] = useState(null)
-  const {setContact} = useAppContext() 
+  const [error, setError] = useState(null);
+  const { setContact } = useAppContext();
 
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     resolver: yupResolver(schema),
   });
 
@@ -53,24 +59,24 @@ const NewContactModal = ({ onClose }) => {
   };
 
   useEffect(() => {
-    document.addEventListener('click', handleDropdownClickOutside);
+    document.addEventListener("click", handleDropdownClickOutside);
     return () => {
-      document.removeEventListener('click', handleDropdownClickOutside);
+      document.removeEventListener("click", handleDropdownClickOutside);
     };
   }, []);
 
   const onSubmit = async (formdata) => {
     // console.log('Form Submitted:', { ...formdata, country_code: selectedCountry.code });
-    if(!localStorage.getItem('whatsapp-token')){
+    if (!localStorage.getItem("EchozChat-token")) {
       // console.log("Token does not exists in local storage")
-      return
+      return;
     }
-    
+
     try {
-      setError(null)
+      setError(null);
 
       const { data } = await axios.post(
-        `${base_url}/users/contacts`, 
+        `${base_url}/users/contacts`,
         {
           Phone: formdata.Phone,
           first_name: formdata.first_name,
@@ -78,24 +84,24 @@ const NewContactModal = ({ onClose }) => {
         },
         {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('whatsapp-token')}`
-          }
+            Authorization: `Bearer ${localStorage.getItem("EchozChat-token")}`,
+          },
         }
       );
-      
-      console.log(data)
-      if(data.success){
-        setContact(prev => [...prev, data.contact])
+
+      console.log(data);
+      if (data.success) {
+        setContact((prev) => [...prev, data.contact]);
         // console.log("Contact added: ", data.contact)
-        setError(null)
+        setError(null);
         onClose();
-      }else{
+      } else {
         // console.log("Failed to add contact: ", data.response.message)
-        setError(data.response.message)
+        setError(data.response.message);
       }
     } catch (error) {
-      console.log("Error from onSubmit func in NewContactModal file: ", error)
-       setError(error.response.data.message)
+      console.log("Error from onSubmit func in NewContactModal file: ", error);
+      setError(error.response.data.message);
     }
     // finally{
     //   onClose();
@@ -105,29 +111,41 @@ const NewContactModal = ({ onClose }) => {
 
   useEffect(() => {
     if (error) {
-        const timer = setTimeout(() => {
-        setError('');
-        }, 3000); 
-        return () => clearTimeout(timer); 
+      const timer = setTimeout(() => {
+        setError("");
+      }, 3000);
+      return () => clearTimeout(timer);
     }
-}, [error]);
+  }, [error]);
 
   return (
-    <div onClick={handleClickOutside} className='absolute w-svw h-svh flex flex-col justify-center items-center bg-black/50 text-white z-5'>
-      <div ref={modalRef} className='flex flex-col space-y-4 min-w-md bg-[#111b21] p-6 rounded-lg shadow-lg'>
+    <div
+      onClick={handleClickOutside}
+      className="absolute w-svw h-svh flex flex-col justify-center items-center bg-black/50 text-white z-5"
+    >
+      <div
+        ref={modalRef}
+        className="flex flex-col space-y-4 min-w-md bg-[#111b21] p-6 rounded-lg shadow-lg"
+      >
         <h2 className="text-lg font-bold mb-4">New Contact</h2>
-        <p className='m-auto rounded-full bg-[#274152] p-4'>
+        <p className="m-auto rounded-full bg-[#274152] p-4">
           <User size={40} />
         </p>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-4">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col space-y-4"
+        >
           {/* Country and Phone Number Section */}
-          <label className='mb-1'>Phone Number</label>
-          <div className='flex items-center space-x-2'>
+          <label className="mb-1">Phone Number</label>
+          <div className="flex items-center space-x-2">
             {/* Country Code Dropdown */}
-            <div className='relative' ref={dropdownRef}>
-              <button onClick={() => setShowDropdown(!showDropdown)} className='bg-[#274152] text-white px-4 py-2 rounded-md'>
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setShowDropdown(!showDropdown)}
+                className="bg-[#274152] text-white px-4 py-2 rounded-md"
+              >
                 {selectedCountry.code}
               </button>
 
@@ -146,7 +164,11 @@ const NewContactModal = ({ onClose }) => {
 
                   <div className="max-h-90 overflow-y-scroll custom-scrollbar">
                     {countryCodes
-                      .filter((c) => c.name.toLowerCase().includes(search.toLowerCase()) || c.code.includes(search))
+                      .filter(
+                        (c) =>
+                          c.name.toLowerCase().includes(search.toLowerCase()) ||
+                          c.code.includes(search)
+                      )
                       .map((country) => (
                         <div
                           key={country.code}
@@ -156,7 +178,7 @@ const NewContactModal = ({ onClose }) => {
                             setShowDropdown(false);
                           }}
                         >
-                          <div className='flex items-center space-x-2'>
+                          <div className="flex items-center space-x-2">
                             <p>{country.flag}</p>
                             <p>{country.name}</p>
                           </div>
@@ -168,54 +190,71 @@ const NewContactModal = ({ onClose }) => {
               )}
             </div>
 
-           <input
-              {...register('Phone')}
+            <input
+              {...register("Phone")}
               type="telephone"
               onInput={(e) => {
-                  e.target.value = e.target.value.replace(/\D/g, '');
-                }}
-              className='bg-[#274152] text-white rounded-md p-2 w-full'
+                e.target.value = e.target.value.replace(/\D/g, "");
+              }}
+              className="bg-[#274152] text-white rounded-md p-2 w-full"
               placeholder="Enter Phone number"
             />
           </div>
-          {errors.Phone && <p className="text-red-500 text-xs">{errors.Phone.message}</p>}
-
-          {/* Name Fields */}
-          <label className='mb-1 mt-3'>First Name</label>
-          <input
-            {...register('first_name')}
-            type="text"
-            className='bg-[#274152] text-white rounded-md p-2'
-            placeholder="Enter first name"
-          />
-          {errors.first_name && <p className="text-red-500 text-xs">{errors.first_name.message}</p>}
-
-          <label className='mb-1 mt-3'>Last Name</label>
-          <input
-            {...register('last_name')}
-            type="text"
-            className='bg-[#274152] text-white rounded-md p-2'
-            placeholder="Enter last name"
-          />
-          {errors.last_name && <p className="text-red-500 text-xs">{errors.last_name.message}</p>}
-
-          {error && (
-            <p className='text-red-500'>{error}</p>
+          {errors.Phone && (
+            <p className="text-red-500 text-xs">{errors.Phone.message}</p>
           )}
 
+          {/* Name Fields */}
+          <label className="mb-1 mt-3">First Name</label>
+          <input
+            {...register("first_name")}
+            type="text"
+            className="bg-[#274152] text-white rounded-md p-2"
+            placeholder="Enter first name"
+          />
+          {errors.first_name && (
+            <p className="text-red-500 text-xs">{errors.first_name.message}</p>
+          )}
+
+          <label className="mb-1 mt-3">Last Name</label>
+          <input
+            {...register("last_name")}
+            type="text"
+            className="bg-[#274152] text-white rounded-md p-2"
+            placeholder="Enter last name"
+          />
+          {errors.last_name && (
+            <p className="text-red-500 text-xs">{errors.last_name.message}</p>
+          )}
+
+          {error && <p className="text-red-500">{error}</p>}
+
           {/* Sync Contacts Toggle */}
-          <div className='flex justify-between items-center'>
-            <div className='text-xs'>
-              <p className='text-sm font-semibold'>Sync contacts to Phone</p>
-              <p>This contact will be added to your Phone&apos;s address book.</p>
+          <div className="flex justify-between items-center">
+            <div className="text-xs">
+              <p className="text-sm font-semibold">Sync contacts to Phone</p>
+              <p>
+                This contact will be added to your Phone&apos;s address book.
+              </p>
             </div>
             <ToggleLeft size={30} />
           </div>
 
           {/* Buttons */}
-          <div className='flex min-w-md rounded-b-lg items-center justify-around '>
-            <button type="submit" className='w-[30%] bg-[#274152] text-white p-1 mt-5 mb-5 rounded-md'>Save</button>
-            <button type="button" className='w-[30%] bg-[#818e97] text-white p-1 mt-5 mb-5 rounded-md' onClick={onClose}>Cancel</button>
+          <div className="flex min-w-md rounded-b-lg items-center justify-around ">
+            <button
+              type="submit"
+              className="w-[30%] bg-[#274152] text-white p-1 mt-5 mb-5 rounded-md"
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              className="w-[30%] bg-[#818e97] text-white p-1 mt-5 mb-5 rounded-md"
+              onClick={onClose}
+            >
+              Cancel
+            </button>
           </div>
         </form>
       </div>

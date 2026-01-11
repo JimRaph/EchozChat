@@ -58,7 +58,7 @@ const Account = () => {
       <div className="space-y-2 border-[#424141da] border-t-1 mt-3 pt-3 pb-2">
           <p>Security</p>
           <p className= {`text-sm ${theme.textSecondary} pr-2`}>Messages and calls in end-to-end encrypted
-            chats stay betwen you and the people you choose. Not even WhatsApp can read or listen 
+            chats stay betwen you and the people you choose. Not even EchozChat can read or listen 
             to them. <span className='text-green-600 underline'>Learn more</span>
           </p>
 

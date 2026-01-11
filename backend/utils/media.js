@@ -28,7 +28,7 @@ cloudinary.config({
     
 
     const uploadOptions = {
-      folder: 'whatsapp-clone',
+      folder: 'EchozChat-clone',
       use_filename: false,
       unique_filename: false,
       overwrite: false,

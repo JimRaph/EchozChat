@@ -14,7 +14,7 @@ import {Toaster} from 'sonner'
 function App() {
 
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
-      return !!localStorage.getItem('whatsapp-token');
+      return !!localStorage.getItem('EchozChat-token');
     });
 
   const handleAuthenticated = () => {

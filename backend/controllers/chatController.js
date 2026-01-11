@@ -115,7 +115,7 @@ export const createChat = async (req, res) => {
     if (!participantId) {
       return res
        .status(404)
-       .json({ message: "User not found, invite to WhatsApp" });
+       .json({ message: "User not found, invite to EchozChat" });
     }
     // Check if chat already exists
     const existingChat = await Chat.findOne({

@@ -23,7 +23,7 @@ export const addContact = async (req, res) => {
     
     if (!contact) {
       console.log('Contact not found in addContact');
-      return res.status(404).json({ message: "Contact not found, invite user to WhatsApp" });
+      return res.status(404).json({ message: "Contact not found, invite user to EchozChat" });
     }
 
     // Find the authenticated user
@@ -91,7 +91,7 @@ export const deleteContact = async (req, res) => {
     if (!contact) {
       return res
         .status(404)
-        .json({ message: "Contact not found, invite user to WhatsApp" });
+        .json({ message: "Contact not found, invite user to EchozChat" });
     }
 
     // Find the authenticated user

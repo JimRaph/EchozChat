@@ -1,4 +1,4 @@
-# Environment Variables for WhatsApp Clone
+# Environment Variables for EchozChat
 
 This document outlines the required environment variables for the application.
 
@@ -62,10 +62,4 @@ CLOUDINARY_API_KEY=your-api-key
 CLOUDINARY_API_SECRET=your-api-secret
 ```
 
-## Migration from Twilio
 
-If you're migrating from Twilio, remove these old environment variables:
-
-- ~~`TWILIO_ACCOUNT_SID`~~
-- ~~`TWILIO_AUTH_TOKEN`~~
-- ~~`TWILIO_PHONE_NUMBER`~~
