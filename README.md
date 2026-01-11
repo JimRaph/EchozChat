@@ -1,8 +1,11 @@
+
 # EchozChat – Real-Time Social Messaging App
 
 A full-stack real-time chat application that mirrors the core experience and interface of **WhatsApp**. Built using **React**, **Node.js**, **Express**, **Socket.io**, and **WebRTC**. This project includes all major WhatsApp functionalities, with the exception of live status viewing (UI mock only).
 
 ---
+
+<img width="1919" height="905" alt="social" src="https://github.com/user-attachments/assets/982037d3-699f-4f75-bc6f-1c9be2e7f6b3" />
 
 ## Features
 
@@ -21,7 +24,7 @@ A full-stack real-time chat application that mirrors the core experience and int
 
 ---
 
-<img width="1919" height="941" alt="Screenshot 2025-07-22 153841" src="https://github.com/user-attachments/assets/eeaff1e1-3e83-4491-97fd-cd6be29a4d2b" />
+
 
 ## Tech Stack
 
