@@ -12,30 +12,87 @@ import { toast } from "sonner";
 import { base_url } from "../../utils/baseUrl";
 import { countries } from "../data/countries";
 import { isValidPhoneNumber } from "libphonenumber-js";
+// import { auth } from "../lib/firebase";
+// import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 
 const AuthFlow = ({ onAuthenticated }) => {
   const [currentView, setCurrentView] = useState(() => {
     return localStorage.getItem("EchozChat-currentView") || "phone";
   });
-  const [phoneNumber, setPhoneNumber] = useState("");
+
+
+  const [phoneNumber, setPhoneNumber] = useState(() => {
+    return localStorage.getItem("EchozChat-phoneNumber") || "";
+  });
 
   const defaultCountry = countries.find((c) => c.code === "US") || countries[0];
-  const [selectedCountry, setSelectedCountry] = useState(defaultCountry);
+
+
+  const [selectedCountry, setSelectedCountry] = useState(() => {
+    const saved = localStorage.getItem("EchozChat-selectedCountry");
+    return saved ? JSON.parse(saved) : defaultCountry;
+  });
+
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
 
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [verificationCode, setVerificationCode] = useState();
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem("theme") || "Dark";
   });
   const [error, setError] = useState("");
 
-  // Handle phone number submission
+
+  const [verificationCode, setVerificationCode] = useState(() => {
+    return localStorage.getItem("EchozChat-verificationCode") || null;
+  }); 
+
+  /* 
+  const [confirmationResult, setConfirmationResult] = useState(null);
+
+  useEffect(() => {
+    const initRecaptcha = () => {
+        try {
+            if (!window.recaptchaVerifier) {
+                window.recaptchaVerifier = new RecaptchaVerifier(
+                    auth,
+                    "recaptcha-container",
+                    {
+                        size: "invisible",
+                        callback: (response) => {
+                            console.log("Recaptcha solved!", response);
+                        },
+                        "expired-callback": () => {
+                             console.log("Recaptcha expired!");
+                             toast.error("Recaptcha expired, please try again.");
+                        },
+                    },
+                );
+            }
+        } catch (e) {
+            console.error("Recaptcha Init Error", e);
+        }
+    };
+    
+    initRecaptcha();
+
+    return () => {
+        if (window.recaptchaVerifier) {
+            try {
+                window.recaptchaVerifier.clear();
+                window.recaptchaVerifier = null;
+            } catch (error) {
+                // Ignore errors during cleanup
+            }
+        }
+    }
+  }, []);
+  */
+
   const handlePhoneSubmit = async (e) => {
     e.preventDefault();
     console.log("base_url: ", base_url);
 
-    // Validation
+
     const testNumbers = ["1234", "2233", "5678"];
     const isTestNumber = testNumbers.includes(phoneNumber);
 
@@ -46,32 +103,32 @@ const AuthFlow = ({ onAuthenticated }) => {
       }
     }
 
-    try {
-      const payloadPhone = isTestNumber
-        ? phoneNumber
-        : selectedCountry.dial_code + phoneNumber;
 
+    const payloadPhone = isTestNumber
+      ? phoneNumber
+      : selectedCountry.dial_code + phoneNumber;
+
+    try {
       const response = await axios.post(base_url + "/auth/register", {
         Phone: payloadPhone,
       });
+
       if (response.data.success) {
-        if (response.data.otp) {
-          setVerificationCode(response.data.otp);
-        } else {
-          setVerificationCode(null);
-          toast.success("OTP sent via SMS");
-        }
+        setVerificationCode(response.data.otp);
+        toast.success("OTP Generated (Simulated)");
         setCurrentView("otp");
       } else {
         toast.error(response?.data?.message || "Something went wrong");
       }
     } catch (err) {
-      // console.log('eww:', err.response?.data?.message || err.message);
-      setError(err.response?.data?.message || "An error occurred");
+      console.error("Sign in error:", err);
+      setError(
+        err.response?.data?.message || "An error occurred during sign in",
+      );
     }
   };
 
-  // handle OTP digit input
+  // handle otp digit input
   const handleOtpChange = (index, value) => {
     if (value.length > 1) return;
 
@@ -79,14 +136,14 @@ const AuthFlow = ({ onAuthenticated }) => {
     newOtp[index] = value;
     setOtp(newOtp);
 
-    // auto focus next input
+
     if (value && index < 5) {
       const nextInput = document.getElementById(`otp-${index + 1}`);
       if (nextInput) nextInput.focus();
     }
   };
 
-  // Handle OTP submission
+  // handle otp submission
   const handleOtpSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -96,28 +153,79 @@ const AuthFlow = ({ onAuthenticated }) => {
         ? phoneNumber
         : selectedCountry.dial_code + phoneNumber;
 
+      const otpValue = otp.join("");
+
       const { data } = await axios.post(base_url + "/auth/verify", {
         phone: payloadPhone,
-        otp: otp.join(""),
+        otp: otpValue,
       });
 
       if (data.success) {
         localStorage.setItem("EchozChat-token", data.token);
         localStorage.setItem("EchozChat-user", JSON.stringify(data.user));
+
         localStorage.removeItem("EchozChat-currentView");
+        localStorage.removeItem("EchozChat-phoneNumber");
+        localStorage.removeItem("EchozChat-selectedCountry");
+        localStorage.removeItem("EchozChat-verificationCode");
+
         onAuthenticated();
       } else {
         toast.error(data?.message || "Something went wrong");
       }
     } catch (error) {
-      // console.log('eww:', error.response?.data?.message || error.message);
-      setError(error.response?.data?.message || "An error occurred");
+      console.error(error);
+      setError(error.response?.data?.message || "Invalid OTP");
     }
   };
 
+  // Handle Resend Code
+  const handleResend = async () => {
+    try {
+      setOtp(["", "", "", "", "", ""]);
+
+      const testNumbers = ["1234", "2233", "5678"];
+      const isTestNumber = testNumbers.includes(phoneNumber);
+      const payloadPhone = isTestNumber
+        ? phoneNumber
+        : selectedCountry.dial_code + phoneNumber;
+
+      const response = await axios.post(base_url + "/auth/register", {
+        Phone: payloadPhone,
+      });
+
+      if (response.data.success) {
+        setVerificationCode(response.data.otp);
+        toast.success("New OTP Code Sent");
+      }
+    } catch (error) {
+      toast.error("Failed to resend code");
+    }
+  };
+
+  // Persistence Effects
   useEffect(() => {
     localStorage.setItem("EchozChat-currentView", currentView);
   }, [currentView]);
+
+  useEffect(() => {
+    localStorage.setItem("EchozChat-phoneNumber", phoneNumber);
+  }, [phoneNumber]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "EchozChat-selectedCountry",
+      JSON.stringify(selectedCountry),
+    );
+  }, [selectedCountry]);
+
+  useEffect(() => {
+    if (verificationCode) {
+      localStorage.setItem("EchozChat-verificationCode", verificationCode);
+    } else {
+      localStorage.removeItem("EchozChat-verificationCode");
+    }
+  }, [verificationCode]);
 
   useEffect(() => {
     if (error) {
@@ -145,6 +253,7 @@ const AuthFlow = ({ onAuthenticated }) => {
       </header>
 
       <div className="flex-1 flex flex-col items-center justify-center max-w-md mx-auto px-4">
+        {/* <div id="recaptcha-container"></div> */}
         {currentView === "phone" ? (
           /* Phone Number Input Step */
           <div className="w-full">
@@ -274,7 +383,7 @@ const AuthFlow = ({ onAuthenticated }) => {
             </div>
           </div>
         ) : (
-          /* OTP Verification Step */
+          /* otp verification step */
           <div className="w-full">
             <div className="text-center mb-8">
               <div className="flex justify-center mb-4">
@@ -297,19 +406,20 @@ const AuthFlow = ({ onAuthenticated }) => {
                   ? phoneNumber
                   : selectedCountry.dial_code + phoneNumber}
               </p>
+
+              {/* display simulated otp */}
               {verificationCode && (
-                <p
-                  className={` ${theme.textSecondary} ${
-                    theme === "Dark" ? "text-gray-400" : ""
-                  }`}
-                >
-                  code: {verificationCode}
-                </p>
+                <div className="mt-2 p-2 bg-[#00a884]/10 rounded border border-[#00a884] inline-block">
+                  <p className="text-[#00a884] font-bold text-lg tracking-widest">
+                    {verificationCode}
+                  </p>
+                  <p className="text-xs text-gray-500">Simulated OTP</p>
+                </div>
               )}
             </div>
 
             <form onSubmit={handleOtpSubmit} className="space-y-6">
-              {/* OTP Input Fields */}
+              {/* otp input fields */}
               <div className="flex justify-between mb-8">
                 {otp.map((digit, index) => (
                   <input
@@ -348,13 +458,22 @@ const AuthFlow = ({ onAuthenticated }) => {
               <p className="text-red-500 text-sm mt-1 text-center">{error}</p>
             )}
 
-            <div className="mt-6 text-center">
+            <div className="mt-6 text-center space-y-4">
               <button
-                onClick={() => setCurrentView("phone")}
-                className="text-[#00a884]"
+                onClick={handleResend}
+                className="text-[#00a884] font-semibold hover:underline"
               >
-                Wrong number?
+                Resend Code
               </button>
+
+              <div className="block">
+                <button
+                  onClick={() => setCurrentView("phone")}
+                  className="text-gray-500 text-sm hover:text-[#00a884]"
+                >
+                  Wrong number?
+                </button>
+              </div>
             </div>
           </div>
         )}

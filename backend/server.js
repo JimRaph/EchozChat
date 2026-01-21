@@ -76,7 +76,7 @@ io.on("connection", (socket) => {
   onlineUsers.set(socket.userId, socket.id);
   // user joins their own room
   // for targeted messages
-  socket.join(socket.userId.toString()); 
+  socket.join(socket.userId.toString());
 
     const originalEmit = socket.emit;
   socket.emit = function(event, ...args) {

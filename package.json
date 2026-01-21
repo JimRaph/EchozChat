@@ -12,7 +12,6 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@aws-sdk/client-sns": "^3.966.0",
     "@vonage/server-sdk": "^3.19.4",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.8.0",
@@ -21,6 +20,7 @@
     "express": "^4.21.2",
     "express-mongo-sanitize": "^2.2.0",
     "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^13.6.0",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.475.0",
@@ -34,6 +34,7 @@
     "simple-peer": "^9.11.1",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
+    "twilio": "^5.11.2",
     "webrtc-adapter": "^9.0.1",
     "xss-clean": "^0.1.4"
   },

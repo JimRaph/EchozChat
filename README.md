@@ -54,13 +54,9 @@ A full-stack real-time chat application that mirrors the core experience and int
 
 ## TEST
 
-Just like with EchozChat, you can only interact with contacts/numbers already registered on EchozChat.
-Add any of the numbers below as contact and start messaging/calling.
+Just like with WhatsApp, you can only interact with contacts/numbers already registered on EchozChat.
 
-- 5678
-- 1234
-- 2233
-  Also you can register new numbers if you prefer and try out the features.
+Register a new number and try out the features. You would need to register two numbers to test some features like messaging, video and audio call (you use one number to message, call, and the other number to receive messages, calls, and video calls).
 
 ---
 
@@ -76,6 +72,12 @@ A `todo.md` file is included with potential enhancements such as:
 
 ---
 
+## Authentication Notes
+- Initially implemented Firebase SMS authentication.
+- Due to billing constraints(and don't want to activate the $300 free credit yet), switched to simulated OTP for demo purposes.
+- Code snippets for Firebase integration are commented out for reference, showing how the project could be extended to production-ready SMS auth.
+
+---
 ## Disclaimer
 
 This project is intended for educational and portfolio purposes only. It is not affiliated with or endorsed by EchozChat or Meta.
