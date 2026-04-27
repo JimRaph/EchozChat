@@ -13,7 +13,6 @@ export const SocketProvider = ({ children }) => {
   const [connected, setConnected] = useState(false);
 
   const selectedChatRef = useRef();
-
   useEffect(() => {
     selectedChatRef.current = selectedChat;
   }, [selectedChat]);
@@ -22,7 +21,11 @@ export const SocketProvider = ({ children }) => {
     if (!token || !user?._id) return;
 
     const socket = io(import.meta.env.VITE_BASE_URL, {
-      auth: { token }
+      auth: { token },
+      withCredentials: true,
+      transports: ["websocket"],
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000
     });
 
     socketRef.current = socket;
