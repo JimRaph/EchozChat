@@ -3,7 +3,6 @@ import { register, verifyPhone } from "../controllers/authController.js";
 
 const routerAuth = Router();
 
-// Simulated Auth Routes
 routerAuth.post("/auth/register", register);
 routerAuth.post("/auth/verify", verifyPhone);
 
